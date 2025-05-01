@@ -29,10 +29,9 @@ export const translations = {
     
     // Daily Progress
     "consumed": "Consumed",
-    "goal": "Goal",
     "remaining": "Remaining",
-    "calories": "calories",
     "ofGoal": "of goal",
+    "calories": "calories",
     
     // Add Food Form
     "addFoodItem": "Add Food Item",
@@ -41,8 +40,6 @@ export const translations = {
     "search": "Search",
     "noFoodsFound": "No foods found.",
     "commonFoods": "Common Foods",
-    "calories": "Calories",
-    "cal": "Cal",
     "protein": "Protein (g)",
     "carbs": "Carbs (g)",
     "fat": "Fat (g)",
@@ -58,7 +55,6 @@ export const translations = {
     
     // Weekly Stats
     "weeklyOverview": "Weekly Overview",
-    "consumed": "Consumed",
     
     // Toasts
     "foodAdded": "Food added successfully",
@@ -79,10 +75,9 @@ export const translations = {
     
     // Daily Progress
     "consumed": "Потреблено",
-    "goal": "Цель",
     "remaining": "Осталось",
-    "calories": "калорий",
     "ofGoal": "от цели",
+    "calories": "калорий",
     
     // Add Food Form
     "addFoodItem": "Добавить продукт",
@@ -91,8 +86,6 @@ export const translations = {
     "search": "Поиск",
     "noFoodsFound": "Продукты не найдены.",
     "commonFoods": "Популярные продукты",
-    "calories": "Калории",
-    "cal": "Кал",
     "protein": "Белки (г)",
     "carbs": "Углеводы (г)",
     "fat": "Жиры (г)",
@@ -108,7 +101,6 @@ export const translations = {
     
     // Weekly Stats
     "weeklyOverview": "Обзор за неделю",
-    "consumed": "Потреблено",
     
     // Toasts
     "foodAdded": "Продукт успешно добавлен",

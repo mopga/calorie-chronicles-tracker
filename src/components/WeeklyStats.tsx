@@ -13,19 +13,15 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
-import { enUS, ru } from 'date-fns/locale';
 
 const WeeklyStats = () => {
   const { weeklyData, calorieGoal } = useCalorie();
   const { language, t } = useLanguage();
   
-  // Set locale based on selected language
-  const dateLocale = language === 'ru' ? ru : enUS;
-  
   // Format data for chart
   const chartData = weeklyData.map(day => ({
     ...day,
-    formattedDate: format(parseISO(day.date), 'EEE', { locale: dateLocale }),
+    formattedDate: format(parseISO(day.date), 'EEE'),
     goal: calorieGoal,
   }));
 

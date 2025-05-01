@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { enUS, ru } from 'date-fns/locale';
 import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
@@ -28,9 +27,6 @@ const Header = () => {
       setIsEditingGoal(false);
     }
   };
-
-  // Set locale based on selected language
-  const dateLocale = language === 'ru' ? ru : enUS;
 
   return (
     <header className="bg-white shadow-sm mb-6">
@@ -50,7 +46,7 @@ const Header = () => {
               <PopoverTrigger asChild>
                 <Button variant="outline" className="justify-start">
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  <span>{format(selectedDate, 'PPP', { locale: dateLocale })}</span>
+                  <span>{format(selectedDate, 'PPP')}</span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="end">
@@ -58,7 +54,6 @@ const Header = () => {
                   mode="single"
                   selected={selectedDate}
                   onSelect={(date) => date && setSelectedDate(date)}
-                  locale={dateLocale}
                   initialFocus
                 />
               </PopoverContent>

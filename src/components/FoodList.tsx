@@ -5,7 +5,6 @@ import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
-import { enUS, ru } from 'date-fns/locale';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -18,11 +17,8 @@ const FoodList = () => {
     toast.success(`${t('removed')} ${name}`);
   };
   
-  // Set locale based on selected language
-  const dateLocale = language === 'ru' ? ru : enUS;
-  
   // Format date for display
-  const dateString = format(selectedDate, 'EEEE, MMMM d', { locale: dateLocale });
+  const dateString = format(selectedDate, 'EEEE, MMMM d');
 
   return (
     <Card>
