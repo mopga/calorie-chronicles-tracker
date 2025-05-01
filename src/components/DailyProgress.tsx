@@ -1,78 +1,120 @@
-
 import React from 'react';
 import { useCalorie } from '@/context/CalorieContext';
-import { useLanguage } from '@/context/LanguageContext';
+import { useLanguage } from '@/context/LanguageContext'; 
+import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-const DailyProgress = () => {
-  const { dailyCalories, calorieGoal } = useCalorie();
+const ProgressRing = ({ 
+  percentage, 
+  radius = 60, 
+  strokeWidth = 12,
+  fontSize = '1.5rem',
+  smallFontSize = '0.75rem'
+}: { 
+  percentage: number, 
+  radius?: number,
+  strokeWidth?: number,
+  fontSize?: string,
+  smallFontSize?: string
+}) => {
+  const normalizedPercentage = Math.min(100, Math.max(0, percentage));
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (normalizedPercentage / 100) * circumference;
   const { t } = useLanguage();
   
-  // Calculate percentage (max 100%)
-  const percentage = Math.min(Math.round((dailyCalories / calorieGoal) * 100), 100);
-  const remaining = Math.max(calorieGoal - dailyCalories, 0);
-  
-  const strokeDasharray = 2 * Math.PI * 45; // Circumference = 2πr
-  const strokeDashoffset = strokeDasharray * (1 - percentage / 100);
+  return (
+    <div className="relative inline-flex items-center justify-center">
+      <svg width={(radius * 2) + strokeWidth} height={(radius * 2) + strokeWidth} className="transform -rotate-90">
+        {/* Background circle */}
+        <circle
+          cx={radius + strokeWidth / 2}
+          cy={radius + strokeWidth / 2}
+          r={radius}
+          fill="none"
+          stroke="hsl(var(--muted))"
+          strokeWidth={strokeWidth}
+        />
+        {/* Progress circle */}
+        <circle
+          cx={radius + strokeWidth / 2}
+          cy={radius + strokeWidth / 2}
+          r={radius}
+          fill="none"
+          stroke="hsl(var(--primary))"
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          className="progress-ring-circle"
+          strokeLinecap="round"
+        />
+      </svg>
+      <div className="absolute flex flex-col items-center justify-center text-center">
+        <span style={{ fontSize }} className="font-semibold text-foreground">{normalizedPercentage}%</span>
+        <span style={{ fontSize: smallFontSize }} className="text-muted-foreground">{t('completed')}</span>
+      </div>
+    </div>
+  );
+};
 
-  // Determine color based on percentage
-  const getStatusColor = () => {
-    if (percentage >= 100) return 'text-destructive';
-    if (percentage >= 85) return 'text-amber-500';
-    return 'text-brand-teal';
-  };
+const DailyProgress = () => {
+  const { todayCalories, calorieGoal } = useCalorie();
+  const { t } = useLanguage();
+  const isMobile = useIsMobile();
+
+  // Calculate calories remaining
+  const caloriesRemaining = Math.max(0, calorieGoal - todayCalories);
+  
+  // Calculate percentage of goal reached
+  const percentComplete = Math.min(100, Math.round((todayCalories / calorieGoal) * 100)) || 0;
 
   return (
-    <Card className="mb-6">
-      <CardContent className="pt-6">
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          <div className="relative flex items-center justify-center mb-4 md:mb-0">
-            <svg className="w-32 h-32">
-              <circle
-                className="text-gray-200"
-                strokeWidth="8"
-                stroke="currentColor"
-                fill="transparent"
-                r="45"
-                cx="50%"
-                cy="50%"
-              />
-              <circle
-                className={`progress-ring-circle ${getStatusColor()}`}
-                strokeWidth="8"
-                strokeDasharray={strokeDasharray}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                stroke="currentColor"
-                fill="transparent"
-                r="45"
-                cx="50%"
-                cy="50%"
-              />
-            </svg>
-            <div className="absolute flex flex-col items-center justify-center text-center">
-              <span className="text-2xl font-bold">{percentage}%</span>
-              <span className="text-xs text-muted-foreground">{t('ofGoal')}</span>
-            </div>
+    <Card className="mb-6 transition-colors">
+      <CardContent className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Circular Progress */}
+          <div className="flex justify-center items-center">
+            <ProgressRing 
+              percentage={percentComplete} 
+              radius={isMobile ? 50 : 60}
+              strokeWidth={isMobile ? 10 : 12}
+              fontSize={isMobile ? '1.25rem' : '1.5rem'}
+              smallFontSize={isMobile ? '0.7rem' : '0.75rem'}
+            />
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full md:w-2/3">
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-muted-foreground text-sm">{t('consumed')}</p>
-              <p className="text-2xl font-semibold mt-1">{dailyCalories}</p>
-              <p className="text-xs text-muted-foreground">{t('calories')}</p>
-            </div>
-            
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-muted-foreground text-sm">{t('goal')}</p>
-              <p className="text-2xl font-semibold mt-1">{calorieGoal}</p>
-              <p className="text-xs text-muted-foreground">{t('calories')}</p>
-            </div>
-            
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-muted-foreground text-sm">{t('remaining')}</p>
-              <p className="text-2xl font-semibold mt-1">{remaining}</p>
-              <p className="text-xs text-muted-foreground">{t('calories')}</p>
+          {/* Daily Stats */}
+          <div className="col-span-1 md:col-span-2">
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-foreground">{t('dailyProgress')}</h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                <div className="p-3 bg-muted rounded-md transition-colors">
+                  <div className="text-sm text-muted-foreground">{t('consumed')}</div>
+                  <div className="text-xl font-semibold">{todayCalories} <span className="text-sm font-normal">{t('cal')}</span></div>
+                </div>
+                
+                <div className="p-3 bg-muted rounded-md transition-colors">
+                  <div className="text-sm text-muted-foreground">{t('goal')}</div>
+                  <div className="text-xl font-semibold">{calorieGoal} <span className="text-sm font-normal">{t('cal')}</span></div>
+                </div>
+                
+                <div className="p-3 bg-muted rounded-md transition-colors">
+                  <div className="text-sm text-muted-foreground">{t('remaining')}</div>
+                  <div className="text-xl font-semibold">{caloriesRemaining} <span className="text-sm font-normal">{t('cal')}</span></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between mb-1 items-center">
+                  <span className="text-sm text-muted-foreground">{todayCalories} {t('cal')}</span>
+                  <span className="text-sm text-muted-foreground">{calorieGoal} {t('cal')}</span>
+                </div>
+                <Progress value={percentComplete} className="h-2" />
+                <div className="mt-1 text-xs text-muted-foreground text-right">
+                  {percentComplete}% {t('ofGoal')}
+                </div>
+              </div>
             </div>
           </div>
         </div>

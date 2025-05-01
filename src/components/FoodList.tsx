@@ -21,7 +21,7 @@ const FoodList = () => {
   const dateString = format(selectedDate, 'EEEE, MMMM d');
 
   return (
-    <Card>
+    <Card className="transition-colors">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex justify-between items-center">
           <span>{t('foodLog')} - {dateString}</span>
@@ -41,7 +41,7 @@ const FoodList = () => {
             {foodItems.map((item) => (
               <div 
                 key={item.id} 
-                className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                className="flex items-center justify-between p-3 bg-muted rounded-lg transition-colors"
               >
                 <div>
                   <p className="font-medium">{item.name}</p>

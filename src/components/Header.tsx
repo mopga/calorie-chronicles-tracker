@@ -13,6 +13,7 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import LanguageSwitcher from './LanguageSwitcher';
+import ThemeToggle from './ThemeToggle';
 
 const Header = () => {
   const { calorieGoal, updateCalorieGoal, selectedDate, setSelectedDate } = useCalorie();
@@ -29,11 +30,11 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm mb-6">
+    <header className="bg-background border-b shadow-sm mb-6 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">
               {t('appTitle')}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -80,7 +81,10 @@ const Header = () => {
               )}
             </div>
             
-            <LanguageSwitcher />
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
       </div>
