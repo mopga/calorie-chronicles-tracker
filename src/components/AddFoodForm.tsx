@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Plus } from 'lucide-react';
+import { Plus, Search, RotateCw } from 'lucide-react';
 import { searchFoods } from '@/utils/foodData';
+import { searchFoodNutrition, searchFoodMock } from '@/services/nutritionApi';
 import {
   Command,
   CommandEmpty,
@@ -27,11 +28,13 @@ const AddFoodForm = () => {
   const { addFood } = useCalorie();
   const { t } = useLanguage();
   const [name, setName] = useState('');
+  const [weight, setWeight] = useState('100');
   const [calories, setCalories] = useState('');
   const [protein, setProtein] = useState('');
   const [carbs, setCarbs] = useState('');
   const [fat, setFat] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +55,7 @@ const AddFoodForm = () => {
     
     // Reset form
     setName('');
+    setWeight('100');
     setCalories('');
     setProtein('');
     setCarbs('');
@@ -72,6 +76,47 @@ const AddFoodForm = () => {
     setIsSearchOpen(false);
   };
 
+  const handleAutoCalculate = async () => {
+    if (!name.trim()) {
+      toast.error(t('pleaseEnterFoodName'));
+      return;
+    }
+
+    if (!weight.trim() || isNaN(parseInt(weight, 10))) {
+      toast.error(t('pleaseEnterValidWeight'));
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      // First try with the real API
+      const weightValue = parseInt(weight, 10);
+      let nutritionData = await searchFoodNutrition(name, weightValue);
+      
+      // If API didn't find the food, fall back to our mock database
+      if (!nutritionData.found) {
+        nutritionData = searchFoodMock(name, weightValue);
+      }
+      
+      if (nutritionData.found) {
+        setCalories(nutritionData.calories.toString());
+        if (nutritionData.protein) setProtein(nutritionData.protein.toString());
+        if (nutritionData.carbs) setCarbs(nutritionData.carbs.toString());
+        if (nutritionData.fat) setFat(nutritionData.fat.toString());
+        
+        toast.success(t('nutritionDataFound'));
+      } else {
+        toast.error(t('nutritionDataNotFound'));
+      }
+    } catch (error) {
+      console.error('Error in auto-calculation:', error);
+      toast.error(t('errorCalculating'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -80,6 +125,7 @@ const AddFoodForm = () => {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4">
+            {/* Food Name Input */}
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">{t('foodName')}</Label>
               <div className="flex">
@@ -97,7 +143,7 @@ const AddFoodForm = () => {
                       variant="outline" 
                       className="rounded-l-none border-l-0"
                     >
-                      {t('search')}
+                      <Search className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="p-0" align="end" side="bottom">
@@ -119,6 +165,34 @@ const AddFoodForm = () => {
                     </Command>
                   </PopoverContent>
                 </Popover>
+              </div>
+            </div>
+            
+            {/* Weight Input Field */}
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="weight">{t('weightInGrams')}</Label>
+              <div className="flex">
+                <Input
+                  id="weight"
+                  placeholder="100"
+                  type="number"
+                  min="1"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                  className="rounded-r-none"
+                />
+                <Button 
+                  type="button" 
+                  onClick={handleAutoCalculate}
+                  disabled={isLoading}
+                  className="rounded-l-none"
+                >
+                  {isLoading ? (
+                    <RotateCw className="h-4 w-4 animate-spin" />
+                  ) : (
+                    t('calculate')
+                  )}
+                </Button>
               </div>
             </div>
             

@@ -1,135 +1,177 @@
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import enTranslations from '../locales/en.json';
+import ruTranslations from '../locales/ru.json';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+interface Language {
+  appName: string;
+  headerTitle: string;
+  selectLanguage: string;
+  selectTheme: string;
+  light: string;
+  dark: string;
+  system: string;
+  dailyProgress: string;
+  consumed: string;
+  goal: string;
+  remaining: string;
+  ofGoal: string;
+  foodLog: string;
+  item: string;
+  items: string;
+  noFoodItems: string;
+  addFirstFood: string;
+  foodName: string;
+  enterFoodName: string;
+  calories: string;
+  protein: string;
+  carbs: string;
+  fat: string;
+  optional: string;
+  addFoodItem: string;
+  addFood: string;
+  pleaseEnterValid: string;
+  foodAdded: string;
+  search: string;
+  noFoodsFound: string;
+  commonFoods: string;
+  removed: string;
+  weeklyStats: string;
+  totalCalories: string;
+  averageDaily: string;
+  calorieGoal: string;
+  setYourGoal: string;
+  save: string;
+  cancel: string;
+  completed: string;
+  weightInGrams: string;
+  calculate: string;
+  nutritionDataFound: string;
+  nutritionDataNotFound: string;
+  errorCalculating: string;
+  pleaseEnterFoodName: string;
+  pleaseEnterValidWeight: string;
+}
 
-// Define available languages
-export type Language = 'en' | 'ru';
-
-// Define language context type
-type LanguageContextType = {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
-};
-
-// Create context with default values
-const LanguageContext = createContext<LanguageContextType>({
-  language: 'en',
-  setLanguage: () => {},
-  t: (key: string) => key,
-});
-
-// Translation dictionaries
-export const translations = {
+const languages: Record<string, Language> = {
   en: {
-    // Header
-    "appTitle": "Calorie Chronicles",
-    "appSubtitle": "Track your nutrition journey",
-    "goal": "Goal",
-    "cal": "cal",
-    
-    // Daily Progress
-    "consumed": "Consumed",
-    "remaining": "Remaining",
-    "ofGoal": "of goal",
-    "calories": "calories",
-    
-    // Add Food Form
-    "addFoodItem": "Add Food Item",
-    "foodName": "Food Name",
-    "enterFoodName": "Enter food name",
-    "search": "Search",
-    "noFoodsFound": "No foods found.",
-    "commonFoods": "Common Foods",
-    "protein": "Protein (g)",
-    "carbs": "Carbs (g)",
-    "fat": "Fat (g)",
-    "optional": "Optional",
-    "addFood": "Add Food",
-    
-    // Food List
-    "foodLog": "Food Log",
-    "items": "items",
-    "item": "item",
-    "noFoodItems": "No food items logged for this day.",
-    "addFirstFood": "Add your first food item above!",
-    
-    // Weekly Stats
-    "weeklyOverview": "Weekly Overview",
-    
-    // Toasts
-    "foodAdded": "Food added successfully",
-    "removed": "Removed",
-    "pleaseEnterValid": "Please enter a valid name and calories",
-    
-    // Language
-    "language": "Language",
-    "english": "English",
-    "russian": "Russian",
+    appName: 'Calorie Tracker',
+    headerTitle: 'Daily Calorie Intake',
+    selectLanguage: 'Select Language',
+    selectTheme: 'Select Theme',
+    light: 'Light',
+    dark: 'Dark',
+    system: 'System',
+    dailyProgress: 'Daily Progress',
+    consumed: 'Consumed',
+    goal: 'Goal',
+    remaining: 'Remaining',
+    ofGoal: 'of Goal',
+    foodLog: 'Food Log',
+    item: 'item',
+    items: 'items',
+    noFoodItems: 'No food items for today.',
+    addFirstFood: 'Add your first food item!',
+    foodName: 'Food Name',
+    enterFoodName: 'Enter food name',
+    calories: 'Calories',
+    protein: 'Protein',
+    carbs: 'Carbs',
+    fat: 'Fat',
+    optional: 'optional',
+    addFoodItem: 'Add Food Item',
+    addFood: 'Add Food',
+    pleaseEnterValid: 'Please enter a valid food name and calorie amount.',
+    foodAdded: 'Food added successfully!',
+    search: 'Search',
+    noFoodsFound: 'No foods found.',
+    commonFoods: 'Common Foods',
+    removed: 'Removed',
+    weeklyStats: 'Weekly Stats',
+    totalCalories: 'Total Calories',
+    averageDaily: 'Average Daily',
+    calorieGoal: 'Calorie Goal',
+    setYourGoal: 'Set Your Goal',
+    save: 'Save',
+    cancel: 'Cancel',
+    completed: 'Completed',
+    weightInGrams: 'Weight (g)',
+    calculate: 'Calculate',
+    nutritionDataFound: 'Nutrition data found!',
+    nutritionDataNotFound: 'Could not find nutrition data for this food',
+    errorCalculating: 'Error calculating nutrition data',
+    pleaseEnterFoodName: 'Please enter a food name',
+    pleaseEnterValidWeight: 'Please enter a valid weight',
   },
   ru: {
-    // Header
-    "appTitle": "Калорийная Хроника",
-    "appSubtitle": "Отслеживайте свой путь питания",
-    "goal": "Цель",
-    "cal": "кал",
-    
-    // Daily Progress
-    "consumed": "Потреблено",
-    "remaining": "Осталось",
-    "ofGoal": "от цели",
-    "calories": "калорий",
-    
-    // Add Food Form
-    "addFoodItem": "Добавить продукт",
-    "foodName": "Название продукта",
-    "enterFoodName": "Введите название продукта",
-    "search": "Поиск",
-    "noFoodsFound": "Продукты не найдены.",
-    "commonFoods": "Популярные продукты",
-    "protein": "Белки (г)",
-    "carbs": "Углеводы (г)",
-    "fat": "Жиры (г)",
-    "optional": "Опционально",
-    "addFood": "Добавить продукт",
-    
-    // Food List
-    "foodLog": "Журнал питания",
-    "items": "продуктов",
-    "item": "продукт",
-    "noFoodItems": "На этот день не записано продуктов.",
-    "addFirstFood": "Добавьте свой первый продукт выше!",
-    
-    // Weekly Stats
-    "weeklyOverview": "Обзор за неделю",
-    
-    // Toasts
-    "foodAdded": "Продукт успешно добавлен",
-    "removed": "Удалено",
-    "pleaseEnterValid": "Пожалуйста, введите корректное название и калории",
-    
-    // Language
-    "language": "Язык",
-    "english": "Английский",
-    "russian": "Русский",
+    appName: 'Трекер Калорий',
+    headerTitle: 'Ежедневное Потребление Калорий',
+    selectLanguage: 'Выберите Язык',
+    selectTheme: 'Выберите Тему',
+    light: 'Светлая',
+    dark: 'Тёмная',
+    system: 'Системная',
+    dailyProgress: 'Дневной Прогресс',
+    consumed: 'Потреблено',
+    goal: 'Цель',
+    remaining: 'Осталось',
+    ofGoal: 'от Цели',
+    foodLog: 'Список Продуктов',
+    item: 'продукт',
+    items: 'продуктов',
+    noFoodItems: 'Сегодня нет добавленных продуктов.',
+    addFirstFood: 'Добавьте свой первый продукт!',
+    foodName: 'Название Продукта',
+    enterFoodName: 'Введите название продукта',
+    calories: 'Калории',
+    protein: 'Белки',
+    carbs: 'Углеводы',
+    fat: 'Жиры',
+    optional: 'необязательно',
+    addFoodItem: 'Добавить Продукт',
+    addFood: 'Добавить',
+    pleaseEnterValid: 'Пожалуйста, введите корректное название продукта и количество калорий.',
+    foodAdded: 'Продукт успешно добавлен!',
+    search: 'Поиск',
+    noFoodsFound: 'Продукты не найдены.',
+    commonFoods: 'Популярные Продукты',
+    removed: 'Удалено',
+    weeklyStats: 'Недельная Статистика',
+    totalCalories: 'Всего Калорий',
+    averageDaily: 'В среднем в день',
+    calorieGoal: 'Цель по Калориям',
+    setYourGoal: 'Установите свою цель',
+    save: 'Сохранить',
+    cancel: 'Отмена',
+    completed: 'Выполнено',
+    weightInGrams: 'Вес (г)',
+    calculate: 'Рассчитать',
+    nutritionDataFound: 'Данные о пищевой ценности найдены!',
+    nutritionDataNotFound: 'Не удалось найти данные о пищевой ценности для этого продукта',
+    errorCalculating: 'Ошибка при расчете пищевой ценности',
+    pleaseEnterFoodName: 'Пожалуйста, введите название блюда',
+    pleaseEnterValidWeight: 'Пожалуйста, введите корректный вес',
   },
 };
 
-// Create provider component
-export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  // Try to get saved language from localStorage, default to 'en'
-  const [language, setLanguage] = useState<Language>(() => {
-    const savedLanguage = localStorage.getItem('language') as Language;
-    return savedLanguage === 'ru' ? 'ru' : 'en';
-  });
+interface LanguageContextType {
+  language: string;
+  setLanguage: (lang: string) => void;
+  t: (key: keyof Language) => string;
+}
 
-  // Update localStorage when language changes
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+  const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
+
   useEffect(() => {
     localStorage.setItem('language', language);
   }, [language]);
 
-  // Translate function
-  const t = (key: string): string => {
-    return translations[language][key as keyof typeof translations[typeof language]] || key;
+  const t = (key: keyof Language): string => {
+    return languages[language][key] || languages['en'][key] || key;
   };
 
   return (
@@ -139,5 +181,10 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Custom hook to use the language context
-export const useLanguage = () => useContext(LanguageContext);
+export const useLanguage = () => {
+  const context = useContext(LanguageContext);
+  if (context === undefined) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
+  }
+  return context;
+};
