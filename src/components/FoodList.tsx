@@ -1,38 +1,44 @@
 
 import React from 'react';
 import { useCalorie } from '@/context/CalorieContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
+import { enUS, ru } from 'date-fns/locale';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const FoodList = () => {
   const { foodItems, removeFood, selectedDate } = useCalorie();
+  const { language, t } = useLanguage();
   
   const handleRemove = (id: string, name: string) => {
     removeFood(id);
-    toast.success(`Removed ${name}`);
+    toast.success(`${t('removed')} ${name}`);
   };
   
+  // Set locale based on selected language
+  const dateLocale = language === 'ru' ? ru : enUS;
+  
   // Format date for display
-  const dateString = format(selectedDate, 'EEEE, MMMM d');
+  const dateString = format(selectedDate, 'EEEE, MMMM d', { locale: dateLocale });
 
   return (
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex justify-between items-center">
-          <span>Food Log - {dateString}</span>
+          <span>{t('foodLog')} - {dateString}</span>
           <span className="text-sm font-normal text-muted-foreground">
-            {foodItems.length} {foodItems.length === 1 ? 'item' : 'items'}
+            {foodItems.length} {foodItems.length === 1 ? t('item') : t('items')}
           </span>
         </CardTitle>
       </CardHeader>
       <CardContent>
         {foodItems.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            <p>No food items logged for this day.</p>
-            <p className="text-sm">Add your first food item above!</p>
+            <p>{t('noFoodItems')}</p>
+            <p className="text-sm">{t('addFirstFood')}</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -44,13 +50,13 @@ const FoodList = () => {
                 <div>
                   <p className="font-medium">{item.name}</p>
                   <div className="text-xs text-muted-foreground">
-                    {item.protein && `${item.protein}g protein • `}
-                    {item.carbs && `${item.carbs}g carbs • `}
-                    {item.fat && `${item.fat}g fat`}
+                    {item.protein && `${item.protein}g ${t('protein')} • `}
+                    {item.carbs && `${item.carbs}g ${t('carbs')} • `}
+                    {item.fat && `${item.fat}g ${t('fat')}`}
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <p className="font-semibold">{item.calories} cal</p>
+                  <p className="font-semibold">{item.calories} {t('cal')}</p>
                   <Button 
                     variant="ghost" 
                     size="sm"

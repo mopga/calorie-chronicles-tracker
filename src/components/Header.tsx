@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useCalorie } from '@/context/CalorieContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CalendarIcon } from 'lucide-react';
@@ -11,9 +12,12 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
+import { enUS, ru } from 'date-fns/locale';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
   const { calorieGoal, updateCalorieGoal, selectedDate, setSelectedDate } = useCalorie();
+  const { language, t } = useLanguage();
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [goalInput, setGoalInput] = useState(calorieGoal.toString());
   
@@ -25,16 +29,19 @@ const Header = () => {
     }
   };
 
+  // Set locale based on selected language
+  const dateLocale = language === 'ru' ? ru : enUS;
+
   return (
     <header className="bg-white shadow-sm mb-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
             <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-              Calorie Chronicles
+              {t('appTitle')}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Track your nutrition journey
+              {t('appSubtitle')}
             </p>
           </div>
           
@@ -43,7 +50,7 @@ const Header = () => {
               <PopoverTrigger asChild>
                 <Button variant="outline" className="justify-start">
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  <span>{format(selectedDate, 'PPP')}</span>
+                  <span>{format(selectedDate, 'PPP', { locale: dateLocale })}</span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="end">
@@ -51,6 +58,7 @@ const Header = () => {
                   mode="single"
                   selected={selectedDate}
                   onSelect={(date) => date && setSelectedDate(date)}
+                  locale={dateLocale}
                   initialFocus
                 />
               </PopoverContent>
@@ -65,17 +73,19 @@ const Header = () => {
                     onChange={(e) => setGoalInput(e.target.value)}
                     className="w-24"
                   />
-                  <Button onClick={handleSaveGoal} size="sm">Save</Button>
+                  <Button onClick={handleSaveGoal} size="sm">{t('goal')}</Button>
                 </>
               ) : (
                 <Button 
                   variant="outline" 
                   onClick={() => setIsEditingGoal(true)}
                 >
-                  Goal: {calorieGoal} cal
+                  {t('goal')}: {calorieGoal} {t('cal')}
                 </Button>
               )}
             </div>
+            
+            <LanguageSwitcher />
           </div>
         </div>
       </div>

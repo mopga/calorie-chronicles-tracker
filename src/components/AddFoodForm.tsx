@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useCalorie } from '@/context/CalorieContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +25,7 @@ import { toast } from 'sonner';
 
 const AddFoodForm = () => {
   const { addFood } = useCalorie();
+  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [calories, setCalories] = useState('');
   const [protein, setProtein] = useState('');
@@ -36,7 +38,7 @@ const AddFoodForm = () => {
     
     const caloriesNum = parseInt(calories, 10);
     if (!name.trim() || isNaN(caloriesNum) || caloriesNum <= 0) {
-      toast.error('Please enter a valid name and calories');
+      toast.error(t('pleaseEnterValid'));
       return;
     }
     
@@ -55,7 +57,7 @@ const AddFoodForm = () => {
     setCarbs('');
     setFat('');
     
-    toast.success('Food added successfully');
+    toast.success(t('foodAdded'));
   };
   
   const handleFoodSelect = (foodName: string) => {
@@ -73,17 +75,17 @@ const AddFoodForm = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Add Food Item</CardTitle>
+        <CardTitle className="text-lg">{t('addFoodItem')}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name">Food Name</Label>
+              <Label htmlFor="name">{t('foodName')}</Label>
               <div className="flex">
                 <Input
                   id="name"
-                  placeholder="Enter food name"
+                  placeholder={t('enterFoodName')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="rounded-r-none"
@@ -95,21 +97,21 @@ const AddFoodForm = () => {
                       variant="outline" 
                       className="rounded-l-none border-l-0"
                     >
-                      Search
+                      {t('search')}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="p-0" align="end" side="bottom">
                     <Command>
-                      <CommandInput placeholder="Search food..." />
+                      <CommandInput placeholder={t('search')} />
                       <CommandList>
-                        <CommandEmpty>No foods found.</CommandEmpty>
-                        <CommandGroup heading="Common Foods">
+                        <CommandEmpty>{t('noFoodsFound')}</CommandEmpty>
+                        <CommandGroup heading={t('commonFoods')}>
                           {name.trim() && searchFoods(name).map((food) => (
                             <CommandItem 
                               key={food.name} 
                               onSelect={() => handleFoodSelect(food.name)}
                             >
-                              {food.name} - {food.calories} cal
+                              {food.name} - {food.calories} {t('cal')}
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -122,10 +124,10 @@ const AddFoodForm = () => {
             
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
-                <Label htmlFor="calories">Calories</Label>
+                <Label htmlFor="calories">{t('calories')}</Label>
                 <Input
                   id="calories"
-                  placeholder="Cal"
+                  placeholder={t('cal')}
                   type="number"
                   min="0"
                   value={calories}
@@ -134,10 +136,10 @@ const AddFoodForm = () => {
               </div>
               
               <div>
-                <Label htmlFor="protein">Protein (g)</Label>
+                <Label htmlFor="protein">{t('protein')}</Label>
                 <Input
                   id="protein"
-                  placeholder="Optional"
+                  placeholder={t('optional')}
                   type="number"
                   min="0"
                   value={protein}
@@ -146,10 +148,10 @@ const AddFoodForm = () => {
               </div>
               
               <div>
-                <Label htmlFor="carbs">Carbs (g)</Label>
+                <Label htmlFor="carbs">{t('carbs')}</Label>
                 <Input
                   id="carbs"
-                  placeholder="Optional"
+                  placeholder={t('optional')}
                   type="number"
                   min="0"
                   value={carbs}
@@ -158,10 +160,10 @@ const AddFoodForm = () => {
               </div>
               
               <div>
-                <Label htmlFor="fat">Fat (g)</Label>
+                <Label htmlFor="fat">{t('fat')}</Label>
                 <Input
                   id="fat"
-                  placeholder="Optional"
+                  placeholder={t('optional')}
                   type="number"
                   min="0"
                   value={fat}
@@ -172,7 +174,7 @@ const AddFoodForm = () => {
           </div>
           
           <Button type="submit" className="w-full">
-            <Plus className="mr-2 h-4 w-4" /> Add Food
+            <Plus className="mr-2 h-4 w-4" /> {t('addFood')}
           </Button>
         </form>
       </CardContent>

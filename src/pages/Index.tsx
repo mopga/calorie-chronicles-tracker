@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { CalorieProvider } from '@/context/CalorieContext';
+import { useLanguage } from '@/context/LanguageContext';
 import Header from '@/components/Header';
 import DailyProgress from '@/components/DailyProgress';
 import AddFoodForm from '@/components/AddFoodForm';

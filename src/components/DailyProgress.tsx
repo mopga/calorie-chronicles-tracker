@@ -1,10 +1,12 @@
 
 import React from 'react';
 import { useCalorie } from '@/context/CalorieContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 
 const DailyProgress = () => {
   const { dailyCalories, calorieGoal } = useCalorie();
+  const { t } = useLanguage();
   
   // Calculate percentage (max 100%)
   const percentage = Math.min(Math.round((dailyCalories / calorieGoal) * 100), 100);
@@ -50,27 +52,27 @@ const DailyProgress = () => {
             </svg>
             <div className="absolute flex flex-col items-center justify-center text-center">
               <span className="text-2xl font-bold">{percentage}%</span>
-              <span className="text-xs text-muted-foreground">of goal</span>
+              <span className="text-xs text-muted-foreground">{t('ofGoal')}</span>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full md:w-2/3">
             <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-muted-foreground text-sm">Consumed</p>
+              <p className="text-muted-foreground text-sm">{t('consumed')}</p>
               <p className="text-2xl font-semibold mt-1">{dailyCalories}</p>
-              <p className="text-xs text-muted-foreground">calories</p>
+              <p className="text-xs text-muted-foreground">{t('calories')}</p>
             </div>
             
             <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-muted-foreground text-sm">Goal</p>
+              <p className="text-muted-foreground text-sm">{t('goal')}</p>
               <p className="text-2xl font-semibold mt-1">{calorieGoal}</p>
-              <p className="text-xs text-muted-foreground">calories</p>
+              <p className="text-xs text-muted-foreground">{t('calories')}</p>
             </div>
             
             <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-muted-foreground text-sm">Remaining</p>
+              <p className="text-muted-foreground text-sm">{t('remaining')}</p>
               <p className="text-2xl font-semibold mt-1">{remaining}</p>
-              <p className="text-xs text-muted-foreground">calories</p>
+              <p className="text-xs text-muted-foreground">{t('calories')}</p>
             </div>
           </div>
         </div>
