@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCalorie } from '@/context/CalorieContext';
 import { useLanguage } from '@/context/LanguageContext'; 
@@ -58,15 +59,15 @@ const ProgressRing = ({
 };
 
 const DailyProgress = () => {
-  const { todayCalories, calorieGoal } = useCalorie();
+  const { dailyCalories, calorieGoal } = useCalorie();
   const { t } = useLanguage();
   const isMobile = useIsMobile();
 
   // Calculate calories remaining
-  const caloriesRemaining = Math.max(0, calorieGoal - todayCalories);
+  const caloriesRemaining = Math.max(0, calorieGoal - dailyCalories);
   
   // Calculate percentage of goal reached
-  const percentComplete = Math.min(100, Math.round((todayCalories / calorieGoal) * 100)) || 0;
+  const percentComplete = Math.min(100, Math.round((dailyCalories / calorieGoal) * 100)) || 0;
 
   return (
     <Card className="mb-6 transition-colors">
@@ -91,7 +92,7 @@ const DailyProgress = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                 <div className="p-3 bg-muted rounded-md transition-colors">
                   <div className="text-sm text-muted-foreground">{t('consumed')}</div>
-                  <div className="text-xl font-semibold">{todayCalories} <span className="text-sm font-normal">{t('cal')}</span></div>
+                  <div className="text-xl font-semibold">{dailyCalories} <span className="text-sm font-normal">{t('cal')}</span></div>
                 </div>
                 
                 <div className="p-3 bg-muted rounded-md transition-colors">
@@ -107,7 +108,7 @@ const DailyProgress = () => {
               
               <div>
                 <div className="flex justify-between mb-1 items-center">
-                  <span className="text-sm text-muted-foreground">{todayCalories} {t('cal')}</span>
+                  <span className="text-sm text-muted-foreground">{dailyCalories} {t('cal')}</span>
                   <span className="text-sm text-muted-foreground">{calorieGoal} {t('cal')}</span>
                 </div>
                 <Progress value={percentComplete} className="h-2" />
