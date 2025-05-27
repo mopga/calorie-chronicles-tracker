@@ -1,14 +1,16 @@
+
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import enTranslations from '../locales/en.json';
-import ruTranslations from '../locales/ru.json';
 
 interface Language {
   appName: string;
+  appTitle: string;
+  appSubtitle: string;
   headerTitle: string;
   selectLanguage: string;
   selectTheme: string;
+  language: string;
+  english: string;
+  russian: string;
   light: string;
   dark: string;
   system: string;
@@ -25,6 +27,7 @@ interface Language {
   foodName: string;
   enterFoodName: string;
   calories: string;
+  cal: string;
   protein: string;
   carbs: string;
   fat: string;
@@ -38,6 +41,7 @@ interface Language {
   commonFoods: string;
   removed: string;
   weeklyStats: string;
+  weeklyOverview: string;
   totalCalories: string;
   averageDaily: string;
   calorieGoal: string;
@@ -57,9 +61,14 @@ interface Language {
 const languages: Record<string, Language> = {
   en: {
     appName: 'Calorie Tracker',
+    appTitle: 'Calorie Tracker',
+    appSubtitle: 'Track your daily nutrition',
     headerTitle: 'Daily Calorie Intake',
     selectLanguage: 'Select Language',
     selectTheme: 'Select Theme',
+    language: 'Language',
+    english: 'English',
+    russian: 'Russian',
     light: 'Light',
     dark: 'Dark',
     system: 'System',
@@ -76,6 +85,7 @@ const languages: Record<string, Language> = {
     foodName: 'Food Name',
     enterFoodName: 'Enter food name',
     calories: 'Calories',
+    cal: 'cal',
     protein: 'Protein',
     carbs: 'Carbs',
     fat: 'Fat',
@@ -89,6 +99,7 @@ const languages: Record<string, Language> = {
     commonFoods: 'Common Foods',
     removed: 'Removed',
     weeklyStats: 'Weekly Stats',
+    weeklyOverview: 'Weekly Overview',
     totalCalories: 'Total Calories',
     averageDaily: 'Average Daily',
     calorieGoal: 'Calorie Goal',
@@ -106,9 +117,14 @@ const languages: Record<string, Language> = {
   },
   ru: {
     appName: 'Трекер Калорий',
+    appTitle: 'Трекер Калорий',
+    appSubtitle: 'Отслеживайте свое питание',
     headerTitle: 'Ежедневное Потребление Калорий',
     selectLanguage: 'Выберите Язык',
     selectTheme: 'Выберите Тему',
+    language: 'Язык',
+    english: 'Английский',
+    russian: 'Русский',
     light: 'Светлая',
     dark: 'Тёмная',
     system: 'Системная',
@@ -125,6 +141,7 @@ const languages: Record<string, Language> = {
     foodName: 'Название Продукта',
     enterFoodName: 'Введите название продукта',
     calories: 'Калории',
+    cal: 'ккал',
     protein: 'Белки',
     carbs: 'Углеводы',
     fat: 'Жиры',
@@ -138,6 +155,7 @@ const languages: Record<string, Language> = {
     commonFoods: 'Популярные Продукты',
     removed: 'Удалено',
     weeklyStats: 'Недельная Статистика',
+    weeklyOverview: 'Обзор недели',
     totalCalories: 'Всего Калорий',
     averageDaily: 'В среднем в день',
     calorieGoal: 'Цель по Калориям',
