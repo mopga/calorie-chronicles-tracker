@@ -1,10 +1,6 @@
 
 import { toast } from 'sonner';
-
-// Edamam API credentials
-// Note: In a production app, these should be stored securely
-const APP_ID = '1234abcd'; // REPLACE WITH YOUR ACTUAL APP ID
-const APP_KEY = '5678efgh1234ijkl'; // REPLACE WITH YOUR ACTUAL APP KEY
+import { supabase } from '@/integrations/supabase/client';
 
 export interface NutritionData {
   calories: number;
@@ -20,39 +16,45 @@ export async function searchFoodNutrition(
   weight: number
 ): Promise<NutritionData> {
   try {
-    // Format the query for the API
-    const formattedQuery = `${query} ${weight}g`;
-    const encodedQuery = encodeURIComponent(formattedQuery);
+    console.log(`Searching nutrition for: ${query}, ${weight}g`);
     
-    // Make request to Edamam API
-    const response = await fetch(
-      `https://api.edamam.com/api/nutrition-data?app_id=${APP_ID}&app_key=${APP_KEY}&ingr=${encodedQuery}`
-    );
+    // Вызываем нашу Edge Function с Qwen API
+    const { data, error } = await supabase.functions.invoke('calculate-nutrition', {
+      body: {
+        foodName: query,
+        weight: weight
+      }
+    });
 
-    if (!response.ok) {
-      throw new Error(`API request failed with status: ${response.status}`);
+    if (error) {
+      console.error('Supabase function error:', error);
+      throw new Error(error.message);
     }
 
-    const data = await response.json();
-    
-    // Check if the API found meaningful results
-    if (data.calories === 0) {
-      return { calories: 0, found: false };
+    console.log('Nutrition API response:', data);
+
+    // Если API нашел данные, возвращаем их
+    if (data && data.found) {
+      return {
+        calories: data.calories,
+        protein: data.protein,
+        carbs: data.carbs,
+        fat: data.fat,
+        weight: weight,
+        found: true
+      };
     }
 
-    // Extract the nutritional information
-    return {
-      calories: Math.round(data.calories),
-      protein: data.totalNutrients?.PROCNT ? Math.round(data.totalNutrients.PROCNT.quantity) : undefined,
-      carbs: data.totalNutrients?.CHOCDF ? Math.round(data.totalNutrients.CHOCDF.quantity) : undefined,
-      fat: data.totalNutrients?.FAT ? Math.round(data.totalNutrients.FAT.quantity) : undefined,
-      weight: data.totalWeight,
-      found: true
-    };
+    // Если API не нашел данные, используем fallback
+    console.log('API did not find data, using fallback');
+    return searchFoodMock(query, weight);
+
   } catch (error) {
-    console.error('Error fetching nutrition data:', error);
-    toast.error('Failed to fetch nutrition data. Please try again.');
-    return { calories: 0, found: false };
+    console.error('Error calling nutrition API:', error);
+    toast.error('Ошибка при получении данных о питании. Попробуйте снова.');
+    
+    // В случае ошибки используем fallback
+    return searchFoodMock(query, weight);
   }
 }
 
@@ -75,6 +77,8 @@ export const searchFoodMock = (query: string, weight: number): NutritionData => 
     { name: 'хлеб', caloriesPer100g: 265 },
     { name: 'йогурт', caloriesPer100g: 60 },
     { name: 'салат цезарь', caloriesPer100g: 380 },
+    { name: 'суп-пюре', caloriesPer100g: 40 },
+    { name: 'тыква', caloriesPer100g: 26 },
     { name: 'pizza', caloriesPer100g: 270 },
     { name: 'burger', caloriesPer100g: 250 },
   ];
@@ -101,4 +105,3 @@ export const searchFoodMock = (query: string, weight: number): NutritionData => 
 
   return { calories: 0, found: false };
 };
-
